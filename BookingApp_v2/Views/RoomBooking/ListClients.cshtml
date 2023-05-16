@@ -1,0 +1,58 @@
+﻿@model IEnumerable<BookingApp_v2.Models.ClientVM>
+
+@{
+    ViewData["Title"] = "ListEmployees";
+}
+
+<h1>List of Clients</h1>
+
+<table id="tblData" class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateJoined)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateJoined)
+            </td>
+            @*<td>
+                    <a class="btn btn-outline-success" asp-action="Details" asp-route-id="@item.Id">
+                        <i class="fa fa-search"></i> Details
+                    </a>
+                @<a asp-action="Details" asp-route-id="@item.Id">Details</a>
+            </td>*@
+        </tr>
+}
+    </tbody>
+</table>
+@*
+@section Scripts{
+    <script>
+        let table = new DataTable('#tblData');
+    </script>
+}*@

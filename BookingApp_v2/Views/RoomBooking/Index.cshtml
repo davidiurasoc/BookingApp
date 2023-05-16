@@ -1,0 +1,77 @@
+﻿@model AdminRoomBookingsViewVM
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body text-center">
+                <h1 class="card-title"> @Model.TotalBookings</h1>
+                <h5 class="card-text">@Html.DisplayNameFor(model => model.TotalBookings)</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+<br/>
+
+<hr/>
+<h1>Room Bookings Log</h1>
+<hr />
+
+<table id="tblData" class="table">
+    <thead>
+        <tr>
+            <th>
+                Employee Name
+            </th>
+            <th>
+                StartDate
+            </th>
+            <th>
+                EndDate
+            </th>
+            <th>
+                Leave Type
+            </th>
+            <th>
+                Date Requested
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.RoomBookings) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BookingClient.FirstName) @Html.DisplayFor(modelItem => item.BookingClient.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoomType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateRequested)
+            </td>
+            @*
+            <td>
+                    <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.Id"> <i class="fa fa-file"></i> Review</a>
+            </td>*@
+        </tr>
+}
+    </tbody>
+</table>
