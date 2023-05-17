@@ -16,9 +16,9 @@ namespace BookingApp_v2.Data
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        [ForeignKey("RoomTypeId")]
-        public Room RoomType { get; set; }
-        public int RoomTypeId { get; set; }
+        [ForeignKey("RoomId")]
+        public Room Room { get; set; }
+        public int RoomId { get; set; }
 
         public DateTime DateRequested { get; set; }
     }

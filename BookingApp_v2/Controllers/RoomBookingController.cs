@@ -23,13 +23,13 @@ namespace BookingApp_v2.Controllers
 
         public RoomBookingController(
             IRoomBookingRepository roomBookingRepo,
-            IRoomTypeRepository roomTypeRepo,
+            IRoomTypeRepository roomRepo,
             IMapper mapper,
             UserManager<Client> userManager
         )
         {
             _roomBookingRepo = roomBookingRepo;
-            _roomRepo = roomTypeRepo;
+            _roomRepo = roomRepo;
             _mapper = mapper;
             _userManager = userManager;
         }
@@ -64,19 +64,6 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
-        //public ActionResult History(int id)
-        //{
-        //    var roomBookings = _roomBookingRepo.GetRoomBookingsPerRoom(id);
-
-        //    var roomBookingModel = _mapper.Map<List<RoomBookingVM>>(roomBookings);
-
-        //    var model = new RoomBookingVM
-        //    {
-        //        RoomBookings = roomBookingModel
-        //    };
-        //    return View(model);
-        //}
-
         // GET: LeaveRequestController/Details/5
         public ActionResult Details(int id)
         {
@@ -92,26 +79,18 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
-        //public ActionResult RemoveClient(string id)
-        //{
-        //    var client = _userManager.GetUserAsync(User).Result;
-        //    var clientId = client.Id;
-
-        //}
-
-
         // GET: LeaveRequestController/Create
         public ActionResult Create()
         {
-            var roomTypes = _roomRepo.FindAll();
-            var roomTypeItems = roomTypes.Select(q => new SelectListItem
+            var rooms = _roomRepo.FindAll();
+            var roomItems = rooms.Select(q => new SelectListItem
             {
-                Text = q.RoomTypeName,
+                Text = q.RoomName,
                 Value = q.Id.ToString()
             });
             var model = new RoomBookingVM
             {
-                RoomTypes = roomTypeItems
+                Rooms = roomItems
             };
             return View(model);
         }
@@ -126,13 +105,13 @@ namespace BookingApp_v2.Controllers
             {
                 var startDate = Convert.ToDateTime(model.StartDate);
                 var endDate = Convert.ToDateTime(model.EndDate);
-                var roomTypes = _roomRepo.FindAll();
-                var roomTypeItems = roomTypes.Select(q => new SelectListItem
+                var rooms = _roomRepo.FindAll();
+                var roomItems = rooms.Select(q => new SelectListItem
                 {
-                    Text = q.RoomTypeName,
+                    Text = q.RoomName,
                     Value = q.Id.ToString()
                 });
-                model.RoomTypes = roomTypeItems;
+                model.Rooms = roomItems;
 
                 if (!ModelState.IsValid)
                 {
@@ -157,7 +136,7 @@ namespace BookingApp_v2.Controllers
                     StartDate = startDateS,
                     EndDate = endDateS,
                     DateRequested = DateTime.Now,
-                    RoomTypeId = model.RoomTypeId,
+                    RoomId = model.RoomId,
                 };
 
                 var roomBooking = _mapper.Map<RoomBooking>(roomBookingModel);

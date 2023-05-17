@@ -29,14 +29,14 @@ namespace BookingApp_v2.Repository
 
         public ICollection<Room> FindAll()
         {
-            var roomTypes = _db.Rooms.ToList();
-            return roomTypes;
+            var rooms = _db.Rooms.ToList();
+            return rooms;
         }
 
         public Room FindById(int id)
         {
-            var roomTypes = _db.Rooms.Find(id);
-            return roomTypes;
+            var room = _db.Rooms.Find(id);
+            return room;
         }
 
         public ICollection<Room> GetEmployeesByRoomType(int id)
@@ -47,7 +47,7 @@ namespace BookingApp_v2.Repository
         public List<RoomBooking> GetRoomBookingsPerRoom(int roomId)
         {
             var roomBookings = _db.RoomBookings
-                .Where(q => q.RoomTypeId == roomId)
+                .Where(q => q.RoomId == roomId)
                 .ToList();
             return roomBookings;
         }

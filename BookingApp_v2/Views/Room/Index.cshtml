@@ -20,7 +20,7 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RoomTypeName)
+                @Html.DisplayNameFor(model => model.RoomName)
             </th>
             <th></th>
         </tr>
@@ -32,7 +32,7 @@
                     @Html.DisplayFor(modelItem => item.Id)
                 </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RoomTypeName)
+                @Html.DisplayFor(modelItem => item.RoomName)
             </td>
                 @if (SignInManager.IsSignedIn(User))
                 {

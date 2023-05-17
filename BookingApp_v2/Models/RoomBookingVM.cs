@@ -23,11 +23,11 @@ namespace BookingApp_v2.Models
         [Required]
         public string EndDate { get; set; }
         
-        public IEnumerable<SelectListItem> RoomTypes { get; set; }
+        public IEnumerable<SelectListItem> Rooms { get; set; }
         
-        public RoomVM RoomType { get; set; }
+        public RoomVM Room { get; set; }
         [Display(Name = "Room Type")]
-        public int RoomTypeId { get; set; }
+        public int RoomId { get; set; }
 
         [Display(Name = "Date Requested")]
         public DateTime DateRequested { get; set; }
@@ -51,9 +51,9 @@ namespace BookingApp_v2.Models
         [Display(Name = "Start Date")]
         [Required]
         public string EndDate { get; set; }
-        public IEnumerable<SelectListItem> RoomTypes { get; set; }
+        public IEnumerable<SelectListItem> Rooms { get; set; }
         [Display(Name = "Start Date")]
-        public int RoomTypeId { get; set; }
+        public int RoomId { get; set; }
 
     }
 

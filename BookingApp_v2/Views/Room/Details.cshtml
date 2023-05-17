@@ -10,10 +10,10 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RoomTypeName)
+            @Html.DisplayNameFor(model => model.RoomName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RoomTypeName)
+            @Html.DisplayFor(model => model.RoomName)
         </dd>
 
         <dt class = "col-sm-2">
@@ -28,58 +28,3 @@
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
-@*
-<hr />
-<h1>Room Bookings Log</h1>
-<hr />
-
-<table id="tblData" class="table">
-    <thead>
-        <tr>
-            <th>
-                Employee Name
-            </th>
-            <th>
-                StartDate
-            </th>
-            <th>
-                EndDate
-            </th>
-            <th>
-                Leave Type
-            </th>
-            <th>
-                Date Requested
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.RoomBookings)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BookingClient.FirstName) @Html.DisplayFor(modelItem => item.BookingClient.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RoomType.RoomTypeName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateRequested)
-                </td>
-                
-            <td>
-            <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.Id"> <i class="fa fa-file"></i> Review</a>
-            </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-*@

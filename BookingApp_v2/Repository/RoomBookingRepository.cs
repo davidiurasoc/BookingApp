@@ -30,7 +30,7 @@ namespace BookingApp_v2.Repository
         {
             var roomBookings = _db.RoomBookings
                 .Include(q => q.BookingClient)
-                .Include(q => q.RoomType)
+                .Include(q => q.Room)
                 .ToList();
             return roomBookings;
         }
@@ -39,7 +39,7 @@ namespace BookingApp_v2.Repository
         {
             var roomHistories = _db.RoomBookings
                 .Include(q => q.BookingClient)
-                .Include(q => q.RoomType)
+                .Include(q => q.Room)
                 .FirstOrDefault(q => q.Id == id);
             return roomHistories;
         }

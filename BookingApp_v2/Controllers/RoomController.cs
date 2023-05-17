@@ -18,23 +18,28 @@ namespace BookingApp_v2.Controllers
         private readonly IRoomTypeRepository _roomRepo;
         private readonly IRoomBookingRepository _roomBookingRepo;
         private readonly IMapper _mapper;
-
         private readonly UserManager<Client> _userManager;
 
-        public RoomController(IRoomTypeRepository roomRepo, IMapper mapper, UserManager<Client> userManager, IRoomBookingRepository roomBookingRepository)
+        public RoomController(
+            IRoomTypeRepository roomRepo,
+            IRoomBookingRepository roomBookingRepo,
+            IMapper mapper, 
+            UserManager<Client> userManager
+            )
         {
             _roomRepo = roomRepo;
+            _roomBookingRepo = roomBookingRepo;
             _mapper = mapper;
             _userManager = userManager;
-            _roomBookingRepo = roomBookingRepository;
+            
         }
 
         [Authorize]
         // GET: LeaveTypesController
         public ActionResult Index()
         {
-            var roomTypes = _roomRepo.FindAll().ToList();
-            var model = _mapper.Map<List<Room>, List<RoomVM>>(roomTypes);
+            var rooms = _roomRepo.FindAll().ToList();
+            var model = _mapper.Map<List<Room>, List<RoomVM>>(rooms);
             return View(model);
         }
 
@@ -81,9 +86,9 @@ namespace BookingApp_v2.Controllers
                 {
                     return View(model);
                 }
-                var roomType = _mapper.Map<Room>(model);
-                roomType.DateCreated = DateTime.Now;
-                var isSucces = _roomRepo.Create(roomType);
+                var room = _mapper.Map<Room>(model);
+                room.DateCreated = DateTime.Now;
+                var isSucces = _roomRepo.Create(room);
                 if (!isSucces)
                 {
                     ModelState.AddModelError("", "Something Went Wrong...");
@@ -106,8 +111,8 @@ namespace BookingApp_v2.Controllers
             {
                 return NotFound();
             }
-            var roomType = _roomRepo.FindById(id);
-            var model = _mapper.Map<RoomVM>(roomType);
+            var room = _roomRepo.FindById(id);
+            var model = _mapper.Map<RoomVM>(room);
 
             return View(model);
         }
@@ -123,8 +128,8 @@ namespace BookingApp_v2.Controllers
                 {
                     return View(model);
                 }
-                var roomType = _mapper.Map<Room>(model);
-                var isSucces = _roomRepo.Update(roomType);
+                var room = _mapper.Map<Room>(model);
+                var isSucces = _roomRepo.Update(room);
                 if (!isSucces)
                 {
                     ModelState.AddModelError("", "Something Went Wrong...");
@@ -143,12 +148,12 @@ namespace BookingApp_v2.Controllers
         // GET: LeaveTypesController/Delete/5
         public ActionResult Delete(int id)
         {
-            var roomType = _roomRepo.FindById(id);
-            if (roomType == null)
+            var room = _roomRepo.FindById(id);
+            if (room == null)
             {
                 return NotFound();
             }
-            var isSuccess = _roomRepo.Delete(roomType);
+            var isSuccess = _roomRepo.Delete(room);
             if (!isSuccess)
             {
                 return BadRequest();

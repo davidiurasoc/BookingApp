@@ -29,7 +29,7 @@ namespace BookingApp_v2.Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RoomTypeName")
+                    b.Property<string>("RoomName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -53,7 +53,7 @@ namespace BookingApp_v2.Data.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RoomTypeId")
+                    b.Property<int>("RoomId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -63,9 +63,43 @@ namespace BookingApp_v2.Data.Migrations
 
                     b.HasIndex("BookingClientId");
 
-                    b.HasIndex("RoomTypeId");
+                    b.HasIndex("RoomId");
 
                     b.ToTable("RoomBookings");
+                });
+
+            modelBuilder.Entity("BookingApp_v2.Models.ClientVM", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DateJoined")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TaxId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClientVM");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -302,9 +336,9 @@ namespace BookingApp_v2.Data.Migrations
                         .WithMany()
                         .HasForeignKey("BookingClientId");
 
-                    b.HasOne("BookingApp_v2.Data.Room", "RoomType")
+                    b.HasOne("BookingApp_v2.Data.Room", "Room")
                         .WithMany()
-                        .HasForeignKey("RoomTypeId")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

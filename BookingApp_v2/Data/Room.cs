@@ -7,7 +7,7 @@ namespace BookingApp_v2.Data
     {
         [Key]
         public int Id { get; set; }
-        public string RoomTypeName { get; set; }
+        public string RoomName { get; set; }
         public DateTime DateCreated { get; set; }
     }
 }
