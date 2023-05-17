@@ -25,12 +25,14 @@ namespace BookingApp_v2.Models
         
         public IEnumerable<SelectListItem> RoomTypes { get; set; }
         
-        public RoomTypeVM RoomType { get; set; }
+        public RoomVM RoomType { get; set; }
         [Display(Name = "Room Type")]
         public int RoomTypeId { get; set; }
 
         [Display(Name = "Date Requested")]
         public DateTime DateRequested { get; set; }
+
+        public List<RoomBookingVM> RoomBookings { get; set; }
 
     }
 

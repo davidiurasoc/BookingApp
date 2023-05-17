@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BookingApp_v2.Data;
 using BookingApp_v2.Models;
+using BookingApp_v2.Data;
+using BookingApp_v2.Models;
 
 namespace BookingApp_v2.Mappings
 {
@@ -8,7 +10,7 @@ namespace BookingApp_v2.Mappings
     {
         public Maps()
         {
-            CreateMap<RoomType, RoomTypeVM>().ReverseMap();
+            CreateMap<Room, RoomVM>().ReverseMap();
             CreateMap<RoomBooking, RoomBookingVM>().ReverseMap();
             CreateMap<Client, ClientVM>().ReverseMap();
         }

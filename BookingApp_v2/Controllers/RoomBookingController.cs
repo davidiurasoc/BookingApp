@@ -17,7 +17,7 @@ namespace BookingApp_v2.Controllers
     public class RoomBookingController : Controller
     {
         private readonly IRoomBookingRepository _roomBookingRepo;
-        private readonly IRoomTypeRepository _roomTypeRepo;
+        private readonly IRoomTypeRepository _roomRepo;
         private readonly IMapper _mapper;
         private readonly UserManager<Client> _userManager;
 
@@ -29,7 +29,7 @@ namespace BookingApp_v2.Controllers
         )
         {
             _roomBookingRepo = roomBookingRepo;
-            _roomTypeRepo = roomTypeRepo;
+            _roomRepo = roomTypeRepo;
             _mapper = mapper;
             _userManager = userManager;
         }
@@ -64,6 +64,19 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
+        //public ActionResult History(int id)
+        //{
+        //    var roomBookings = _roomBookingRepo.GetRoomBookingsPerRoom(id);
+
+        //    var roomBookingModel = _mapper.Map<List<RoomBookingVM>>(roomBookings);
+
+        //    var model = new RoomBookingVM
+        //    {
+        //        RoomBookings = roomBookingModel
+        //    };
+        //    return View(model);
+        //}
+
         // GET: LeaveRequestController/Details/5
         public ActionResult Details(int id)
         {
@@ -79,14 +92,21 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
+        //public ActionResult RemoveClient(string id)
+        //{
+        //    var client = _userManager.GetUserAsync(User).Result;
+        //    var clientId = client.Id;
+
+        //}
+
 
         // GET: LeaveRequestController/Create
         public ActionResult Create()
         {
-            var roomTypes = _roomTypeRepo.FindAll();
+            var roomTypes = _roomRepo.FindAll();
             var roomTypeItems = roomTypes.Select(q => new SelectListItem
             {
-                Text = q.Name,
+                Text = q.RoomTypeName,
                 Value = q.Id.ToString()
             });
             var model = new RoomBookingVM
@@ -106,10 +126,10 @@ namespace BookingApp_v2.Controllers
             {
                 var startDate = Convert.ToDateTime(model.StartDate);
                 var endDate = Convert.ToDateTime(model.EndDate);
-                var roomTypes = _roomTypeRepo.FindAll();
+                var roomTypes = _roomRepo.FindAll();
                 var roomTypeItems = roomTypes.Select(q => new SelectListItem
                 {
-                    Text = q.Name,
+                    Text = q.RoomTypeName,
                     Value = q.Id.ToString()
                 });
                 model.RoomTypes = roomTypeItems;

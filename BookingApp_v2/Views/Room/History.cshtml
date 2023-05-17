@@ -1,18 +1,15 @@
-﻿@model ClientRoomBookingViewVM
+﻿@model List<RoomBookingVM>
 @{
-    ViewData["Title"] = "MyLeave";
+    ViewData["Title"] = "History";
 }
 
-<hr/>
+<hr />
 
-<h1>My Booking Records</h1>
+<h1>Room History</h1>
 
 <table id="tblData" class="table">
     <thead>
         <tr>
-            <th>
-                Room Type
-            </th>
             <th>
                 Start Date
             </th>
@@ -22,19 +19,12 @@
             <th>
                 Date Requested
             </th>
-            
-            <th>
-                Cancel Request
-            </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.RoomBookings)
+        @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RoomType.RoomTypeName)
-                </td>
 
                 <td>
                     @Html.DisplayFor(modelItem => item.StartDate)
@@ -43,7 +33,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.EndDate)
                 </td>
-                    
+
                 <td>
                     @Html.DisplayFor(modelItem => item.DateRequested)
                 </td>

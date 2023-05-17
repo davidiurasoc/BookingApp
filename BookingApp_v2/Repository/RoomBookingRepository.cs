@@ -44,12 +44,20 @@ namespace BookingApp_v2.Repository
             return roomHistories;
         }
 
-        public ICollection<RoomBooking> GetRoomBookingsPerClient(string employeeId)
+        public ICollection<RoomBooking> GetRoomBookingsPerClient(string clientId)
         {
-            var leaveRequests = FindAll()
-                .Where(q => q.BookingClientId == employeeId)
+            var roomBookings = FindAll()
+                .Where(q => q.BookingClientId == clientId)
                 .ToList();
-            return leaveRequests;
+            return roomBookings;
+        }
+
+        public ICollection<RoomBooking> GetRoomBookingsPerRoom(int roomId)
+        {
+            var roomBookings = FindAll()
+                .Where(q => q.Id == roomId)
+                .ToList();
+            return roomBookings;
         }
 
         public bool isExists(int id)

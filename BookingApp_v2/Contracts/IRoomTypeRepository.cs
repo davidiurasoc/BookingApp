@@ -4,8 +4,9 @@ using System.Collections.Generic;
 
 namespace BookingApp_v2.Contracts
 {
-    public interface IRoomTypeRepository : IRepositoryBase<RoomType>
+    public interface IRoomTypeRepository : IRepositoryBase<Room>
     {
-        ICollection<RoomType> GetEmployeesByRoomType(int id);
+        ICollection<Room> GetEmployeesByRoomType(int id);
+        List<RoomBooking> GetRoomBookingsPerRoom(int roomId);
     }
 }

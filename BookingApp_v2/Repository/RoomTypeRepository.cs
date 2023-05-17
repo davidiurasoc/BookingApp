@@ -1,5 +1,7 @@
 ﻿using BookingApp_v2.Contracts;
 using BookingApp_v2.Data;
+using BookingApp_v2.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,38 +15,46 @@ namespace BookingApp_v2.Repository
             _db = db;
         }
 
-        public bool Create(RoomType entity)
+        public bool Create(Room entity)
         {
-            _db.RoomTypes.Add(entity);
+            _db.Rooms.Add(entity);
             return Save();
         }
 
-        public bool Delete(RoomType entity)
+        public bool Delete(Room entity)
         {
-            _db.RoomTypes.Remove(entity);
+            _db.Rooms.Remove(entity);
             return Save();
         }
 
-        public ICollection<RoomType> FindAll()
+        public ICollection<Room> FindAll()
         {
-            var roomTypes = _db.RoomTypes.ToList();
+            var roomTypes = _db.Rooms.ToList();
             return roomTypes;
         }
 
-        public RoomType FindById(int id)
+        public Room FindById(int id)
         {
-            var roomTypes = _db.RoomTypes.Find(id);
+            var roomTypes = _db.Rooms.Find(id);
             return roomTypes;
         }
 
-        public ICollection<RoomType> GetEmployeesByRoomType(int id)
+        public ICollection<Room> GetEmployeesByRoomType(int id)
         {
             throw new System.NotImplementedException();
         }
 
+        public List<RoomBooking> GetRoomBookingsPerRoom(int roomId)
+        {
+            var roomBookings = _db.RoomBookings
+                .Where(q => q.RoomTypeId == roomId)
+                .ToList();
+            return roomBookings;
+        }
+
         public bool isExists(int id)
         {
-            var exists = _db.RoomTypes.Any(q => q.Id == id);
+            var exists = _db.Rooms.Any(q => q.Id == id);
             return exists;
         }
 
@@ -54,9 +64,9 @@ namespace BookingApp_v2.Repository
             return changes > 0;
         }
 
-        public bool Update(RoomType entity)
+        public bool Update(Room entity)
         {
-            _db.RoomTypes.Update(entity);
+            _db.Rooms.Update(entity);
             return Save();
         }
     }

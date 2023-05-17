@@ -16,6 +16,7 @@ namespace BookingApp_v2.Data
 
         public DbSet<Client> Clients { get; set; }
         public DbSet<RoomBooking> RoomBookings { get; set; }
-        public DbSet<RoomType> RoomTypes { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<BookingApp_v2.Models.ClientVM> ClientVM { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using BookingApp_v2.Data;
 using BookingApp_v2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,36 +13,55 @@ using System.Linq;
 namespace BookingApp_v2.Controllers
 {
     [Authorize(Roles = "Administrator")]
-    public class RoomTypesController : Controller
+    public class RoomController : Controller
     {
-        private readonly IRoomTypeRepository _repo;
+        private readonly IRoomTypeRepository _roomRepo;
+        private readonly IRoomBookingRepository _roomBookingRepo;
         private readonly IMapper _mapper;
 
-        public RoomTypesController(IRoomTypeRepository repo, IMapper mapper)
+        private readonly UserManager<Client> _userManager;
+
+        public RoomController(IRoomTypeRepository roomRepo, IMapper mapper, UserManager<Client> userManager, IRoomBookingRepository roomBookingRepository)
         {
-            _repo = repo;
+            _roomRepo = roomRepo;
             _mapper = mapper;
+            _userManager = userManager;
+            _roomBookingRepo = roomBookingRepository;
         }
 
         [Authorize]
         // GET: LeaveTypesController
         public ActionResult Index()
         {
-            var roomTypes = _repo.FindAll().ToList();
-            var model = _mapper.Map<List<RoomType>, List<RoomTypeVM>>(roomTypes);
+            var roomTypes = _roomRepo.FindAll().ToList();
+            var model = _mapper.Map<List<Room>, List<RoomVM>>(roomTypes);
             return View(model);
         }
+
 
         // GET: LeaveTypesController/Details/5
         public ActionResult Details(int id)
         {
-            if (!_repo.isExists(id))
+            if (!_roomRepo.isExists(id))
             {
                 return NotFound();
             }
-            var roomBooking = _repo.FindById(id);
-            var model = _mapper.Map<RoomTypeVM>(roomBooking);
+            var room = _roomRepo.FindById(id);
+            var model = _mapper.Map<RoomVM>(room);
             return View(model);
+        }
+
+        public ActionResult History(int id)
+        {
+            var roomBookings = _roomRepo.GetRoomBookingsPerRoom(id);
+
+            var roomBookingModel = _mapper.Map<List<RoomBookingVM>>(roomBookings);
+
+            //var model = new ClientRoomBookingViewVM
+            //{
+            //    RoomBookings = roomBookingModel
+            //};
+            return View(roomBookingModel);
         }
 
         // GET: LeaveTypesController/Create
@@ -53,7 +73,7 @@ namespace BookingApp_v2.Controllers
         // POST: LeaveTypesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(RoomTypeVM model)
+        public ActionResult Create(RoomVM model)
         {
             try
             {
@@ -61,9 +81,9 @@ namespace BookingApp_v2.Controllers
                 {
                     return View(model);
                 }
-                var roomType = _mapper.Map<RoomType>(model);
+                var roomType = _mapper.Map<Room>(model);
                 roomType.DateCreated = DateTime.Now;
-                var isSucces = _repo.Create(roomType);
+                var isSucces = _roomRepo.Create(roomType);
                 if (!isSucces)
                 {
                     ModelState.AddModelError("", "Something Went Wrong...");
@@ -82,12 +102,12 @@ namespace BookingApp_v2.Controllers
         // GET: LeaveTypesController/Edit/5
         public ActionResult Edit(int id)
         {
-            if (!_repo.isExists(id))
+            if (!_roomRepo.isExists(id))
             {
                 return NotFound();
             }
-            var roomType = _repo.FindById(id);
-            var model = _mapper.Map<RoomTypeVM>(roomType);
+            var roomType = _roomRepo.FindById(id);
+            var model = _mapper.Map<RoomVM>(roomType);
 
             return View(model);
         }
@@ -95,7 +115,7 @@ namespace BookingApp_v2.Controllers
         // POST: LeaveTypesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(RoomTypeVM model)
+        public ActionResult Edit(RoomVM model)
         {
             try
             {
@@ -103,8 +123,8 @@ namespace BookingApp_v2.Controllers
                 {
                     return View(model);
                 }
-                var roomType = _mapper.Map<RoomType>(model);
-                var isSucces = _repo.Update(roomType);
+                var roomType = _mapper.Map<Room>(model);
+                var isSucces = _roomRepo.Update(roomType);
                 if (!isSucces)
                 {
                     ModelState.AddModelError("", "Something Went Wrong...");
@@ -123,12 +143,12 @@ namespace BookingApp_v2.Controllers
         // GET: LeaveTypesController/Delete/5
         public ActionResult Delete(int id)
         {
-            var roomType = _repo.FindById(id);
+            var roomType = _roomRepo.FindById(id);
             if (roomType == null)
             {
                 return NotFound();
             }
-            var isSuccess = _repo.Delete(roomType);
+            var isSuccess = _roomRepo.Delete(roomType);
             if (!isSuccess)
             {
                 return BadRequest();
@@ -140,7 +160,7 @@ namespace BookingApp_v2.Controllers
         // POST: LeaveTypesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, RoomTypeVM model)
+        public ActionResult Delete(int id, RoomVM model)
         {
             try
             {

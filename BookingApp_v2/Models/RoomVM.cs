@@ -1,13 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System;
+using System.Collections.Generic;
 
 namespace BookingApp_v2.Models
 {
-    public class RoomTypeVM
+    public class RoomVM
     {
         public int Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string RoomTypeName { get; set; }
         public DateTime DateCreated { get; set; }
+
+        public List<RoomBookingVM> RoomBookings { get; set; }
     }
 }
