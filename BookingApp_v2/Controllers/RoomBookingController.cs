@@ -38,7 +38,7 @@ namespace BookingApp_v2.Controllers
         [Authorize(Roles = "Administrator")]
         // GET: LeaveRequestController
         public ActionResult Index()
-        {
+        { 
             var roomBookings = _roomBookingRepo.FindAll();
             var roomBookingsModel = _mapper.Map<List<RoomBookingVM>>( roomBookings );
             var model = new AdminRoomBookingsViewVM

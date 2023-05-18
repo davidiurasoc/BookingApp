@@ -40,9 +40,3 @@ public class Booking
         EndDate = endDate;
     }
 }
-
-
-
-1. BookingHistoryForRooms
-2. DeletingUsers(Only for user with no bookings)
-3. UI Changes - Buttons, Icons, Names
