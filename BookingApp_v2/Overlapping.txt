@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static void Main()
+    {
+        DateTime startDate = new DateTime(2023, 5, 1);
+        DateTime endDate = new DateTime(2023, 5, 10);
+        
+        List<Booking> bookings = new List<Booking>()
+        {
+            new Booking(new DateTime(2023, 4, 29), new DateTime(2023, 5, 2)),
+            new Booking(new DateTime(2023, 5, 3), new DateTime(2023, 5, 6)),
+            new Booking(new DateTime(2023, 5, 7), new DateTime(2023, 5, 9))
+        };
+        
+        Booking bookingToCompare = new Booking(new DateTime(2023, 5, 4), new DateTime(2023, 5, 5));
+        
+        foreach (Booking booking in bookings)
+        {
+            bool isIntervalOverlapping = IsIntervalOverlapping(booking.StartDate, booking.EndDate, bookingToCompare.StartDate, bookingToCompare.EndDate);
+        }
+    }
+
+    public static bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, DateTime dateToCompareStartDate, DateTime dateToCompareEndDate)
+    {
+        return startDate <= dateToCompareEndDate && endDate >= dateToCompareStartDate;
+    }
+}
+
+public class Booking
+{
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+
+    public Booking(DateTime startDate, DateTime endDate)
+    {
+        StartDate = startDate;
+        EndDate = endDate;
+    }
+}
+
+
+
+1. BookingHistoryForRooms
+2. DeletingUsers(Only for user with no bookings)
+3. UI Changes - Buttons, Icons, Names

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BookingApp_v2.Controllers
 {
@@ -64,6 +65,20 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
+        public ActionResult BookingsPerClient(string id)
+        {
+            //var client = _userManager.GetUserAsync(User).Result;
+            //var id = client.Id;
+
+            var roomBookings = _roomBookingRepo.FindAll()
+                .Where(q => q.BookingClientId == id)
+                .ToList();
+
+            var clientBookingModel = _mapper.Map<List<RoomBookingVM>>(roomBookings);
+
+            return View(clientBookingModel);
+        }
+
         // GET: LeaveRequestController/Details/5
         public ActionResult Details(int id)
         {
@@ -77,6 +92,39 @@ namespace BookingApp_v2.Controllers
             var clients = _userManager.GetUsersInRoleAsync("Client").Result;
             var model = _mapper.Map<List<ClientVM>>(clients);
             return View(model);
+        }
+
+        public static bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, DateTime dateToCompareStartDate, DateTime dateToCompareEndDate)
+        {
+            return startDate <= dateToCompareEndDate && endDate >= dateToCompareStartDate;
+        }
+
+
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
+                return View("NotFound");
+            }
+            else
+            {
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListClients");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View("ListClients");
+            }
         }
 
         // GET: LeaveRequestController/Create
@@ -124,6 +172,30 @@ namespace BookingApp_v2.Controllers
                     return View(model);
                 }
 
+                //var roomBookings = _roomBookingRepo.GetRoomBookingsPerRoom(model.RoomId);
+                //var counter = 0;
+
+                //while (counter < roomBookings.Count)
+                //{
+                //    var bookings = roomBookings.Select(q => new RoomBooking
+                //    {
+                //        Id = q.Id,
+                //        StartDate = q.StartDate,
+                //        EndDate = q.EndDate,
+                //    });
+
+                //    if (_roomBookingRepo.ViewIfIsBookedDateIsOverlapping(startDate, endDate, model.StartDate, model.EndDate) == false)
+                //    {
+
+                //    }
+
+                //}
+                
+                //if (IsIntervalOverlapping(startDate, endDate,) == false)
+                //{
+                //    ModelState.AddModelError("", "Please choose another date interval because there is booking overlapping");
+                //}
+
                 var client = _userManager.GetUserAsync(User).Result;
                 int daysBooked = (int)(endDate - startDate).TotalDays;
 
@@ -150,7 +222,7 @@ namespace BookingApp_v2.Controllers
 
                 return RedirectToAction("MyBooking");
             }
-            catch (Exception ex)
+            catch
             {
                 ModelState.AddModelError("", "Something Went Wrong...");
                 return View(model);

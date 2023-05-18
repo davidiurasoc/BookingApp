@@ -52,7 +52,7 @@ namespace BookingApp_v2.Repository
             return roomBookings;
         }
 
-        public bool isExists(int id)
+        public bool IsExists(int id)
         {
             var exists = _db.Rooms.Any(q => q.Id == id);
             return exists;

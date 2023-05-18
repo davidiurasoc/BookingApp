@@ -47,7 +47,7 @@ namespace BookingApp_v2.Controllers
         // GET: LeaveTypesController/Details/5
         public ActionResult Details(int id)
         {
-            if (!_roomRepo.isExists(id))
+            if (!_roomRepo.IsExists(id))
             {
                 return NotFound();
             }
@@ -107,7 +107,7 @@ namespace BookingApp_v2.Controllers
         // GET: LeaveTypesController/Edit/5
         public ActionResult Edit(int id)
         {
-            if (!_roomRepo.isExists(id))
+            if (!_roomRepo.IsExists(id))
             {
                 return NotFound();
             }
