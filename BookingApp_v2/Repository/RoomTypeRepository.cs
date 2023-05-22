@@ -44,7 +44,7 @@ namespace BookingApp_v2.Repository
             throw new System.NotImplementedException();
         }
 
-        public List<RoomBooking> GetRoomBookingsPerRoom(int roomId)
+        public List<RoomBooking> GetRoomBookingsPerRoomR(int roomId)
         {
             var roomBookings = _db.RoomBookings
                 .Where(q => q.RoomId == roomId)

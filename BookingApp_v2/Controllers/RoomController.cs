@@ -58,7 +58,7 @@ namespace BookingApp_v2.Controllers
 
         public ActionResult History(int id)
         {
-            var roomBookings = _roomRepo.GetRoomBookingsPerRoom(id);
+            var roomBookings = _roomRepo.GetRoomBookingsPerRoomR(id);
 
             var roomBookingModel = _mapper.Map<List<RoomBookingVM>>(roomBookings);
 

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Itenso.TimePeriod;
 
 namespace BookingApp_v2.Controllers
 {
@@ -94,9 +95,13 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
-        public static bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, DateTime dateToCompareStartDate, DateTime dateToCompareEndDate)
+        public bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, List<RoomBooking> roomBookings)
         {
-            return startDate <= dateToCompareEndDate && endDate >= dateToCompareStartDate;
+            TimeRange wantToBeBooked = new TimeRange(startDate, endDate);
+
+            bool isOverlapping = roomBookings.Any(rb =>
+                wantToBeBooked.OverlapsWith(new TimeRange(rb.StartDate, rb.EndDate)));
+            return isOverlapping;
         }
 
 
@@ -151,6 +156,7 @@ namespace BookingApp_v2.Controllers
             
             try
             {
+                var roomBookings = _roomBookingRepo.GetRoomBookingsPerRoom(model.RoomId);
                 var startDate = Convert.ToDateTime(model.StartDate);
                 var endDate = Convert.ToDateTime(model.EndDate);
                 var rooms = _roomRepo.FindAll();
@@ -172,29 +178,11 @@ namespace BookingApp_v2.Controllers
                     return View(model);
                 }
 
-                //var roomBookings = _roomBookingRepo.GetRoomBookingsPerRoom(model.RoomId);
-                //var counter = 0;
-
-                //while (counter < roomBookings.Count)
-                //{
-                //    var bookings = roomBookings.Select(q => new RoomBooking
-                //    {
-                //        Id = q.Id,
-                //        StartDate = q.StartDate,
-                //        EndDate = q.EndDate,
-                //    });
-
-                //    if (_roomBookingRepo.ViewIfIsBookedDateIsOverlapping(startDate, endDate, model.StartDate, model.EndDate) == false)
-                //    {
-
-                //    }
-
-                //}
-                
-                //if (IsIntervalOverlapping(startDate, endDate,) == false)
-                //{
-                //    ModelState.AddModelError("", "Please choose another date interval because there is booking overlapping");
-                //}
+                if (IsIntervalOverlapping(startDate, endDate, roomBookings))
+                {
+                    ModelState.AddModelError("", "The room is already booked in this interval!");
+                    return View(model);
+                }
 
                 var client = _userManager.GetUserAsync(User).Result;
                 int daysBooked = (int)(endDate - startDate).TotalDays;

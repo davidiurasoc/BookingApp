@@ -57,7 +57,7 @@ namespace BookingApp_v2.Repository
         public List<RoomBooking> GetRoomBookingsPerRoom(int roomId)
         {
             var roomBookings = FindAll()
-                .Where(q => q.Id == roomId)
+                .Where(q => q.RoomId == roomId)
                 .ToList();
             return roomBookings;
         }
