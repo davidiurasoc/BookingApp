@@ -62,28 +62,6 @@ namespace BookingApp_v2.Repository
             return roomBookings;
         }
 
-        public bool ViewIfIsBookedDateIsOverlapping(
-            int id,
-            DateTime bookingStartDate,
-            DateTime bookingEndDate,
-            DateTime bookedbeforeStartDate,
-            DateTime bookedbeforeEndDate
-            )
-        {
-
-            bool isIntervalOverlapping = IsIntervalOverlapping(
-                bookingStartDate, bookingEndDate,
-                bookedbeforeStartDate, bookedbeforeEndDate);
-
-            return isIntervalOverlapping;
-        }
-
-        public static bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, DateTime dateToCompareStartDate, DateTime dateToCompareEndDate)
-        {
-            return startDate <= dateToCompareEndDate && endDate >= dateToCompareStartDate;
-        }
-
-
         public bool IsExists(int id)
         {
             var exists = _db.RoomBookings.Any(q => q.Id == id);

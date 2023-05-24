@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Itenso.TimePeriod;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingApp_v2.Controllers
 {
@@ -95,6 +97,46 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
+        public ActionResult DeleteClient(string id)
+        {
+            // Step 1: Find the client
+            var client = _userManager.FindByIdAsync(id).Result;
+
+            if (client != null)
+            {
+                // Step 2: Retrieve all the bookings associated with the client
+                var roomBookings = _roomBookingRepo.FindAll()
+                    .Where(q => q.BookingClientId == id)
+                    .ToList();
+
+                // Step 3: Delete each booking
+                foreach (var booking in roomBookings)
+                {
+                    _roomBookingRepo.Delete(booking);
+                }
+
+                // Step 4: Delete the client
+
+                var result = _userManager.DeleteAsync(client).Result;
+
+                if (result.Succeeded)
+                {
+                    var clients = _userManager.GetUsersInRoleAsync("Client").Result;
+                    var model = _mapper.Map<List<ClientVM>>(clients);
+                    return View(model);
+                }
+                else
+                {
+                    return View("Error");
+                }
+            }
+            else
+            {
+                return ListClients();
+            }
+            
+        }
+
         public bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, List<RoomBooking> roomBookings)
         {
             TimeRange wantToBeBooked = new TimeRange(startDate, endDate);
@@ -102,34 +144,6 @@ namespace BookingApp_v2.Controllers
             bool isOverlapping = roomBookings.Any(rb =>
                 wantToBeBooked.OverlapsWith(new TimeRange(rb.StartDate, rb.EndDate)));
             return isOverlapping;
-        }
-
-
-        public async Task<IActionResult> DeleteUser(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-
-            if (user == null)
-            {
-                ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
-                return View("NotFound");
-            }
-            else
-            {
-                var result = await _userManager.DeleteAsync(user);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("ListClients");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-                return View("ListClients");
-            }
         }
 
         // GET: LeaveRequestController/Create
@@ -180,7 +194,7 @@ namespace BookingApp_v2.Controllers
 
                 if (IsIntervalOverlapping(startDate, endDate, roomBookings))
                 {
-                    ModelState.AddModelError("", "The room is already booked in this interval!");
+                    ModelState.AddModelError("", "The room is already booked somewhere in this interval!");
                     return View(model);
                 }
 

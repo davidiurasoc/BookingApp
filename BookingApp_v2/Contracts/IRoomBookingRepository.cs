@@ -9,12 +9,5 @@ namespace BookingApp_v2.Contracts
     {
         ICollection<RoomBooking> GetRoomBookingsPerClient(string employeeId);
         List<RoomBooking> GetRoomBookingsPerRoom(int roomId);
-        public bool ViewIfIsBookedDateIsOverlapping(
-            int id,
-            DateTime bookingStartDate,
-            DateTime bookingEndDate,
-            DateTime bookedbeforeStartDate,
-            DateTime bookedbeforeEndDate
-            );
     }
 }

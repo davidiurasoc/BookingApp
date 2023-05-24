@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BookingApp_v2.Models;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BookingApp_v2.Data
