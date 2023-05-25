@@ -35,7 +35,7 @@ namespace BookingApp_v2.Controllers
         }
 
         [Authorize]
-        // GET: LeaveTypesController
+        // GET: RoomController
         public ActionResult Index()
         {
             var rooms = _roomRepo.FindAll().ToList();
@@ -44,7 +44,7 @@ namespace BookingApp_v2.Controllers
         }
 
 
-        // GET: LeaveTypesController/Details/5
+        // GET: RoomController/Details/5
         public ActionResult Details(int id)
         {
             if (!_roomRepo.IsExists(id))
@@ -69,13 +69,13 @@ namespace BookingApp_v2.Controllers
             return View(roomBookingModel);
         }
 
-        // GET: LeaveTypesController/Create
+        // GET: RoomController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: LeaveTypesController/Create
+        // POST: RoomController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(RoomVM model)
@@ -104,7 +104,7 @@ namespace BookingApp_v2.Controllers
             }
         }
 
-        // GET: LeaveTypesController/Edit/5
+        // GET: RoomController/Edit/5
         public ActionResult Edit(int id)
         {
             if (!_roomRepo.IsExists(id))
@@ -117,7 +117,7 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
-        // POST: LeaveTypesController/Edit/5
+        // POST: RoomController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(RoomVM model)
@@ -145,7 +145,7 @@ namespace BookingApp_v2.Controllers
             }
         }
 
-        // GET: LeaveTypesController/Delete/5
+        // GET: RoomController/Delete/5
         public ActionResult Delete(int id)
         {
             var room = _roomRepo.FindById(id);
@@ -162,7 +162,7 @@ namespace BookingApp_v2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: LeaveTypesController/Delete/5
+        // POST: RoomController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, RoomVM model)

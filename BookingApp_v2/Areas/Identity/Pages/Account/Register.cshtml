@@ -13,14 +13,19 @@
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
+                <label asp-for="Input.UserName"></label>
+                <input asp-for="Input.UserName" class="form-control" id="Input_UserName"/>
+                <span asp-validation-for="Input.UserName" class="text-danger" id="userNameError"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.FirstName"></label>
-                <input asp-for="Input.FirstName" class="form-control" />
-                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                <input asp-for="Input.FirstName" class="form-control" id="Input_FirstName" />
+                <span asp-validation-for="Input.FirstName" class="text-danger" id="firstNameError"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.LastName"></label>
-                <input asp-for="Input.LastName" class="form-control" />
-                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                <input asp-for="Input.LastName" class="form-control" id="Input_LastName"/>
+                <span asp-validation-for="Input.LastName" class="text-danger" id="lastNameError"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Email"></label>
@@ -73,5 +78,38 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    @*<partial name="_ValidationScriptsPartial"/>*@
+
+    <script>
+        $(document).ready(function () {
+            $('#Input_FirstName').on('input', function () {
+                var firstName = $(this).val();
+                var regex = /^[a-zA-Z]+$/; // Regular expression to allow only letters
+
+                if (regex.test(firstName)) {
+                    // Valid input
+                    $('#firstNameError').text(''); // Clear any error message
+                } else {
+                    // Invalid input
+                    $('#firstNameError').text('First Name must contain only letters.');
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $('#Input_LastName').on('input', function () {
+                var firstName = $(this).val();
+                var regex = /^[a-zA-Z]+$/; // Regular expression to allow only letters
+
+                if (regex.test(firstName)) {
+                    // Valid input
+                    $('#lastNameError').text(''); // Clear any error message
+                } else {
+                    // Invalid input
+                    $('#lastNameError').text('Last Name must contain only letters.');
+                }
+            });
+        });
+
+    </script>
 }

@@ -71,6 +71,11 @@ namespace BookingApp_v2.Areas.Identity.Pages.Account
             [DataType(DataType.Text)]
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "User Name")]
+            public string UserName { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -86,10 +91,11 @@ namespace BookingApp_v2.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new Client { 
-                    UserName = Input.Email, 
+                    UserName = Input.UserName, 
                     Email = Input.Email, 
                     FirstName = Input.FirstName, 
-                    LastName = Input.LastName 
+                    LastName = Input.LastName,
+                    DateJoined = DateTime.Now,
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

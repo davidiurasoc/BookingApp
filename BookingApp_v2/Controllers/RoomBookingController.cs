@@ -39,7 +39,7 @@ namespace BookingApp_v2.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        // GET: LeaveRequestController
+        // GET: RoomBookingController
         public ActionResult Index()
         { 
             var roomBookings = _roomBookingRepo.FindAll();
@@ -70,9 +70,6 @@ namespace BookingApp_v2.Controllers
 
         public ActionResult BookingsPerClient(string id)
         {
-            //var client = _userManager.GetUserAsync(User).Result;
-            //var id = client.Id;
-
             var roomBookings = _roomBookingRepo.FindAll()
                 .Where(q => q.BookingClientId == id)
                 .ToList();
@@ -82,11 +79,63 @@ namespace BookingApp_v2.Controllers
             return View(clientBookingModel);
         }
 
-        // GET: LeaveRequestController/Details/5
+        // GET: RoomBookingController/Details/5
         public ActionResult Details(int id)
         {
             var roomBookings = _roomBookingRepo.FindById(id);
             var model = _mapper.Map<RoomBookingVM>(roomBookings);
+            return View(model);
+        }
+
+        public ActionResult ClientDetails(string id)
+        {
+            var client = _userManager.FindByIdAsync(id).Result;
+            var model = _mapper.Map<ClientVM>(client);
+            return View(model);
+        }
+
+        public ActionResult EditClientDetails(string id)
+        {
+            var client = _userManager.FindByIdAsync(id).Result;
+            var model = _mapper.Map<ClientVM>(client);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> EditClientDetails(ClientVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                var client = await _userManager.FindByIdAsync(model.Id);
+
+                if (client != null)
+                {
+                    client.UserName = model.UserName;
+                    client.FirstName = model.FirstName;
+                    client.LastName = model.LastName;
+                    client.Email = model.Email;
+                    client.PhoneNumber = model.PhoneNumber;
+                    client.DateOfBirth = model.DateOfBirth;
+
+                    var result = await _userManager.UpdateAsync(client);
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction(nameof(ListClients));
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Something went wrong");
+                        return View("Error");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Client not found.");
+                }
+            }
             return View(model);
         }
 
@@ -99,23 +148,18 @@ namespace BookingApp_v2.Controllers
 
         public ActionResult DeleteClient(string id)
         {
-            // Step 1: Find the client
             var client = _userManager.FindByIdAsync(id).Result;
 
             if (client != null)
             {
-                // Step 2: Retrieve all the bookings associated with the client
                 var roomBookings = _roomBookingRepo.FindAll()
                     .Where(q => q.BookingClientId == id)
                     .ToList();
 
-                // Step 3: Delete each booking
                 foreach (var booking in roomBookings)
                 {
                     _roomBookingRepo.Delete(booking);
                 }
-
-                // Step 4: Delete the client
 
                 var result = _userManager.DeleteAsync(client).Result;
 
@@ -146,7 +190,7 @@ namespace BookingApp_v2.Controllers
             return isOverlapping;
         }
 
-        // GET: LeaveRequestController/Create
+        // GET: RoomBookingController/Create
         public ActionResult Create()
         {
             var rooms = _roomRepo.FindAll();
@@ -162,7 +206,7 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
-        // POST: LeaveRequestController/Create
+        // POST: RoomBookingController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(RoomBookingVM model)
@@ -189,6 +233,12 @@ namespace BookingApp_v2.Controllers
                 if (DateTime.Compare(startDate, endDate) > 1)
                 {
                     ModelState.AddModelError("", "Start date cannot be further int the future than the End date...");
+                    return View(model);
+                }
+
+                if (DateTime.Compare(DateTime.Now, startDate) > 0)
+                {
+                    ModelState.AddModelError("", "Start date cannot be in the past...");
                     return View(model);
                 }
 
@@ -231,13 +281,13 @@ namespace BookingApp_v2.Controllers
             }
         }
 
-        // GET: LeaveRequestController/Edit/5
+        // GET: RoomBookingController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: LeaveRequestController/Edit/5
+        // POST: RoomBookingController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -252,8 +302,23 @@ namespace BookingApp_v2.Controllers
             }
         }
 
-        // GET: LeaveRequestController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult CancelBooking(int id)
+        {
+            var roomBookings = _roomBookingRepo.FindAll().ToList();
+
+            foreach (var booking in roomBookings)
+            {
+                if (booking.Id == id)
+                {
+                    _roomBookingRepo.Delete(booking);
+                }
+            }
+
+            return RedirectToAction(nameof(MyBooking));
+        }
+
+        // GET: RoomBookingController/Delete/5
+        public ActionResult Delete(string id)
         {
             return View();
         }
