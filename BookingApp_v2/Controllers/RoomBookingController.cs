@@ -21,13 +21,13 @@ namespace BookingApp_v2.Controllers
     public class RoomBookingController : Controller
     {
         private readonly IRoomBookingRepository _roomBookingRepo;
-        private readonly IRoomTypeRepository _roomRepo;
+        private readonly IRoomRepository _roomRepo;
         private readonly IMapper _mapper;
         private readonly UserManager<Client> _userManager;
 
         public RoomBookingController(
             IRoomBookingRepository roomBookingRepo,
-            IRoomTypeRepository roomRepo,
+            IRoomRepository roomRepo,
             IMapper mapper,
             UserManager<Client> userManager
         )
@@ -190,6 +190,22 @@ namespace BookingApp_v2.Controllers
             return isOverlapping;
         }
 
+
+        [HttpPost]
+        public ActionResult GetAvailableRooms(DateTime startDate, DateTime endDate)
+        {
+            var availableRooms = _roomBookingRepo.GetAvailableRooms(startDate, endDate);
+
+            var roomItems = availableRooms.Select(q => new
+            {
+                Text = q.RoomName,
+                Value = q.Id.ToString()
+            });
+
+            return Json(roomItems);
+        }
+
+
         // GET: RoomBookingController/Create
         public ActionResult Create()
         {
@@ -211,28 +227,17 @@ namespace BookingApp_v2.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(RoomBookingVM model)
         {
-            
+
+
             try
             {
-                var roomBookings = _roomBookingRepo.GetRoomBookingsPerRoom(model.RoomId);
+                var roomBookings = _roomBookingRepo.FindAll().ToList();
                 var startDate = Convert.ToDateTime(model.StartDate);
                 var endDate = Convert.ToDateTime(model.EndDate);
-                var rooms = _roomRepo.FindAll();
-                var roomItems = rooms.Select(q => new SelectListItem
-                {
-                    Text = q.RoomName,
-                    Value = q.Id.ToString()
-                });
-                model.Rooms = roomItems;
-
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
 
                 if (DateTime.Compare(startDate, endDate) > 1)
                 {
-                    ModelState.AddModelError("", "Start date cannot be further int the future than the End date...");
+                    ModelState.AddModelError("", "Start date cannot be further in the future than the End date...");
                     return View(model);
                 }
 
@@ -242,11 +247,26 @@ namespace BookingApp_v2.Controllers
                     return View(model);
                 }
 
-                if (IsIntervalOverlapping(startDate, endDate, roomBookings))
+                var availableRooms = _roomBookingRepo.GetAvailableRooms(startDate, endDate);
+
+                var roomItems = availableRooms.Select(q => new SelectListItem
                 {
-                    ModelState.AddModelError("", "The room is already booked somewhere in this interval!");
+                    Text = q.RoomName,
+                    Value = q.Id.ToString()
+                });
+
+                model.Rooms = roomItems;
+
+                if (!ModelState.IsValid)
+                {
                     return View(model);
                 }
+
+                //    //if (IsIntervalOverlapping(startDate, endDate, roomBookings))
+                //    //{
+                //    //    ModelState.AddModelError("", "The room is already booked somewhere in this interval!");
+                //    //    return View(model);
+                //    //}
 
                 var client = _userManager.GetUserAsync(User).Result;
                 int daysBooked = (int)(endDate - startDate).TotalDays;
@@ -265,6 +285,11 @@ namespace BookingApp_v2.Controllers
 
                 var roomBooking = _mapper.Map<RoomBooking>(roomBookingModel);
                 var isSuccess = _roomBookingRepo.Create(roomBooking);
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
 
                 if (!isSuccess)
                 {

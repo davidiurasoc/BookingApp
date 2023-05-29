@@ -1,16 +1,18 @@
 ﻿using BookingApp_v2.Contracts;
 using BookingApp_v2.Data;
 using BookingApp_v2.Models;
+using Itenso.TimePeriod;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BookingApp_v2.Repository
 {
-    public class RoomTypeRepository : IRoomTypeRepository
+    public class RoomRepository : IRoomRepository
     {
         private readonly ApplicationDbContext _db;
-        public RoomTypeRepository(ApplicationDbContext db)
+        public RoomRepository(ApplicationDbContext db)
         {
             _db = db;
         }
@@ -38,6 +40,15 @@ namespace BookingApp_v2.Repository
             var room = _db.Rooms.Find(id);
             return room;
         }
+
+        //public bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, List<RoomBooking> roomBookings)
+        //{
+        //    TimeRange wantToBeBooked = new TimeRange(startDate, endDate);
+
+        //    bool isOverlapping = roomBookings.Any(rb =>
+        //        wantToBeBooked.OverlapsWith(new TimeRange(rb.StartDate, rb.EndDate)));
+        //    return isOverlapping;
+        //}
 
         public ICollection<Room> GetEmployeesByRoomType(int id)
         {

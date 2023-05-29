@@ -36,7 +36,7 @@ namespace BookingApp_v2
                     Configuration.GetConnectionString("DefaultConnection")));
 
             // Add references for  Repository  and Contracts  to Startup file
-            services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+            services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IRoomBookingRepository, RoomBookingRepository>();
 
             services.AddAutoMapper(typeof(Maps));

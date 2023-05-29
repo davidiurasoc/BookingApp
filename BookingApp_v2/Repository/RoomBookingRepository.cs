@@ -54,6 +54,20 @@ namespace BookingApp_v2.Repository
             return roomBookings;
         }
 
+        public IEnumerable<Room> GetAvailableRooms(DateTime startDate, DateTime endDate)
+        {
+            var bookedRoomIds = _db.RoomBookings
+                .Where(rb => startDate <= rb.EndDate && endDate >= rb.StartDate)
+                .Select(rb => rb.RoomId)
+                .ToList();
+
+            var availableRooms = _db.Rooms
+                .Where(r => !bookedRoomIds.Contains(r.Id))
+                .ToList();
+
+            return availableRooms;
+        }
+
         public List<RoomBooking> GetRoomBookingsPerRoom(int roomId)
         {
             var roomBookings = FindAll()

@@ -15,13 +15,13 @@ namespace BookingApp_v2.Controllers
     [Authorize(Roles = "Administrator")]
     public class RoomController : Controller
     {
-        private readonly IRoomTypeRepository _roomRepo;
+        private readonly IRoomRepository _roomRepo;
         private readonly IRoomBookingRepository _roomBookingRepo;
         private readonly IMapper _mapper;
         private readonly UserManager<Client> _userManager;
 
         public RoomController(
-            IRoomTypeRepository roomRepo,
+            IRoomRepository roomRepo,
             IRoomBookingRepository roomBookingRepo,
             IMapper mapper, 
             UserManager<Client> userManager
