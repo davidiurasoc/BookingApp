@@ -198,8 +198,7 @@ namespace BookingApp_v2.Controllers
                 if (result.Succeeded)
                 {
                     var clients = _userManager.GetUsersInRoleAsync("Client").Result;
-                    var model = _mapper.Map<List<ClientVM>>(clients);
-                    return View(model);
+                    return RedirectToAction("ListClients");
                 }
                 else
                 {
@@ -208,7 +207,7 @@ namespace BookingApp_v2.Controllers
             }
             else
             {
-                return ListClients();
+                return View("Error");
             }
             
         }
@@ -426,7 +425,6 @@ namespace BookingApp_v2.Controllers
                     {
                         ModelState.AddModelError("", "A apărut o eroare la adăugarea rolului utilizatorului.");
                     }
-                    //_userManager.AddToRoleAsync(newUser, "Client").Wait(); // need to implement diferent roles
 
                     return RedirectToAction("ListClients");
                 }
