@@ -17,9 +17,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingApp_v2.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class RoomBookingController : Controller
     {
+        private readonly ApplicationDbContext _db;
         private readonly IRoomBookingRepository _roomBookingRepo;
         private readonly IRoomRepository _roomRepo;
         private readonly IMapper _mapper;
@@ -29,16 +30,18 @@ namespace BookingApp_v2.Controllers
             IRoomBookingRepository roomBookingRepo,
             IRoomRepository roomRepo,
             IMapper mapper,
-            UserManager<Client> userManager
+            UserManager<Client> userManager,
+            ApplicationDbContext db
         )
         {
             _roomBookingRepo = roomBookingRepo;
             _roomRepo = roomRepo;
             _mapper = mapper;
             _userManager = userManager;
+            _db = db;
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, SuperAdministrator")]
         // GET: RoomBookingController
         public ActionResult Index()
         { 
@@ -103,7 +106,7 @@ namespace BookingApp_v2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, SuperAdministrator")]
         public async Task<IActionResult> EditClientDetails(ClientVM model)
         {
             if (ModelState.IsValid)
@@ -139,12 +142,41 @@ namespace BookingApp_v2.Controllers
             return View(model);
         }
 
+        //public ActionResult ListClients()
+        //{
+        //    var currentUser = _userManager.GetUserAsync(User).Result;
+        //    //var superAdminRole = "SuperAdministrator";
+
+        //    var users = _userManager.Users
+        //        .Where(u => u.Id != currentUser.Id)
+        //        .ToList();
+
+        //    var model = _mapper.Map<List<ClientVM>>(users);
+        //    return View(model);
+        //}
+
         public ActionResult ListClients()
         {
-            var clients = _userManager.GetUsersInRoleAsync("Client").Result;
-            var model = _mapper.Map<List<ClientVM>>(clients);
+            var loggedInUser = _userManager.GetUserAsync(User).GetAwaiter().GetResult();
+            var superAdminRole = "SuperAdministrator";
+
+            var users = _userManager.Users.ToList();
+            var wantedUsers = new List<IdentityUser>();
+
+            foreach (var user in users)
+            {
+                var roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult();
+                if (user.Id != loggedInUser.Id && !roles.Contains(superAdminRole))
+                {
+                    wantedUsers.Add(user);
+                }
+            }
+
+            var model = _mapper.Map<List<ClientVM>>(wantedUsers);
             return View(model);
         }
+
+
 
         public ActionResult DeleteClient(string id)
         {
@@ -181,14 +213,14 @@ namespace BookingApp_v2.Controllers
             
         }
 
-        public bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, List<RoomBooking> roomBookings)
-        {
-            TimeRange wantToBeBooked = new TimeRange(startDate, endDate);
+        //public bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, List<RoomBooking> roomBookings)
+        //{
+        //    TimeRange wantToBeBooked = new TimeRange(startDate, endDate);
 
-            bool isOverlapping = roomBookings.Any(rb =>
-                wantToBeBooked.OverlapsWith(new TimeRange(rb.StartDate, rb.EndDate)));
-            return isOverlapping;
-        }
+        //    bool isOverlapping = roomBookings.Any(rb =>
+        //        wantToBeBooked.OverlapsWith(new TimeRange(rb.StartDate, rb.EndDate)));
+        //    return isOverlapping;
+        //}
 
 
         [HttpPost]
@@ -348,7 +380,7 @@ namespace BookingApp_v2.Controllers
             return View();
         }
 
-        // POST: LeaveRequestController/Delete/5
+        // POST: RoomBookingController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
@@ -361,6 +393,54 @@ namespace BookingApp_v2.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult CreateNewUser()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult CreateNewUser(ClientVM model) // 
+        {
+            if (User.IsInRole("Administrator") || User.IsInRole("SuperAdministrator"))
+            {
+                var newUser = new Client
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    DateJoined = model.DateJoined,
+                };
+
+                var result = _userManager.CreateAsync(newUser, "P@ssword1").Result;
+                if (result.Succeeded)
+                {
+                    var roleResult = _userManager.AddToRoleAsync(newUser, model.Role).Result;
+                    if (roleResult.Succeeded)
+                    {
+                        return RedirectToAction("ListClients");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "A apărut o eroare la adăugarea rolului utilizatorului.");
+                    }
+                    //_userManager.AddToRoleAsync(newUser, "Client").Wait(); // need to implement diferent roles
+
+                    return RedirectToAction("ListClients");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "A apărut o eroare la crearea utilizatorului.");
+                }
+            }
+            else
+            {
+                return Forbid();
+            }
+
+            return View();
         }
     }
 }

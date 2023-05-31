@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace BookingApp_v2.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator, SuperAdministrator")]
     public class RoomController : Controller
     {
         private readonly IRoomRepository _roomRepo;
@@ -34,7 +34,7 @@ namespace BookingApp_v2.Controllers
             
         }
 
-        [Authorize]
+        //[Authorize]
         // GET: RoomController
         public ActionResult Index()
         {

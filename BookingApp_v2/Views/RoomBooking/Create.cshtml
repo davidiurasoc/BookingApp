@@ -83,10 +83,12 @@
                         },
                         success: function (data) {
                             $("#RoomId").empty();
+                            // daca sunt camere disponibile
                             if (data.length > 0) {
                                 $.each(data, function (index, item) {
                                     $("#RoomId").append($('<option></option>').val(item.value).text(item.text));
                                 });
+                            // daca nu sunt camere disponibile
                             } else {
                                 $("#RoomId").append($('<option disabled selected></option>').text('No available rooms'));
                             }

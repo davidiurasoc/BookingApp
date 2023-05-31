@@ -5,6 +5,13 @@
 }
 
 <h1>List of Clients</h1>
+@*<li class="nav-item">
+    <a class="nav-link text-white btn btn-success" asp-area="Identity" asp-page="/Account/Register"> <i class="fa-solid fa-plus"></i> Create New </a>
+</li>*@
+
+<p>
+    <a asp-action="CreateNewUser" class="btn btn-success"> <i class="fa-solid fa-plus"></i> Create New</a>
+</p>
 
 <table id="tblData" class="table">
     <thead>
