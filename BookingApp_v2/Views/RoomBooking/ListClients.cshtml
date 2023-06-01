@@ -1,19 +1,18 @@
-﻿@model IEnumerable<BookingApp_v2.Models.ClientVM>
+﻿@inject Microsoft.AspNetCore.Identity.UserManager<BookingApp_v2.Data.Client> userManager
+
+@model IEnumerable<BookingApp_v2.Models.ClientVM>
 
 @{
     ViewData["Title"] = "ListEmployees";
 }
 
 <h1>List of Clients</h1>
-@*<li class="nav-item">
-    <a class="nav-link text-white btn btn-success" asp-area="Identity" asp-page="/Account/Register"> <i class="fa-solid fa-plus"></i> Create New </a>
-</li>*@
 
 <p>
     <a asp-action="CreateNewUser" class="btn btn-success"> <i class="fa-solid fa-plus"></i> Create New</a>
 </p>
 
-<table id="tblData" class="table">
+<table @*id="tblData"*@ class="table">
     <thead>
         <tr>
             <th>
@@ -28,39 +27,44 @@
             <th>
                 @Html.DisplayNameFor(model => model.DateJoined)
             </th>
-
+            <th>
+                @Html.DisplayNameFor(model => model.Role) 
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateJoined)
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateJoined)
+                </td>
+                <td>
+                    @{
+                        var client = await userManager.FindByIdAsync(item.Id);
+                        var roles = await userManager.GetRolesAsync(client);
+                        var roleDisplay = string.Join(", ", roles);
+                    }
+                    @roleDisplay
+                </td>
                 <td>
                     <a asp-action="EditClientDetails" asp-route-id="@item.Id" class="btn btn-outline-warning"> <i class="fa-solid fa-pen-to-square"></i></a>
                     <a asp-action="ClientDetails" asp-route-id="@item.Id" class="btn btn-outline-primary"> <i class="fa-solid fa-circle-info"></i> </a>
                     <a asp-action="BookingsPerClient" asp-route-id="@item.Id" class="btn btn-outline-dark"> <i class="fa-solid fa-list-ol"></i> </a>
                     <a asp-action="DeleteClient" asp-route-id="@item.Id" onclick="return confirm('Are you sure you want to delete this user?')" class="btn btn-outline-danger"> <i class="fa-solid fa-trash"></i> </a>
                 </td>
-            @*<td>
-                    <a class="btn btn-outline-success" asp-action="Details" asp-route-id="@item.Id">
-                        <i class="fa fa-search"></i> Details
-                    </a>
-                @<a asp-action="Details" asp-route-id="@item.Id">Details</a>
-            </td>*@
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>
 

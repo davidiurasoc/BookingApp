@@ -26,5 +26,6 @@ namespace BookingApp_v2.Models
         [Required]
         [Display(Name = "Role")]
         public string Role { get; set; }
+        public IEnumerable<string> Roles { get; set; }
     }
 }
