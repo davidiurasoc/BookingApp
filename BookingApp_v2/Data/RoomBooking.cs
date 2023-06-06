@@ -21,5 +21,7 @@ namespace BookingApp_v2.Data
         public int RoomId { get; set; }
 
         public DateTime DateRequested { get; set; }
+
+        public string Status { get; set; }
     }
 }

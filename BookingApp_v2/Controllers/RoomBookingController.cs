@@ -312,6 +312,7 @@ namespace BookingApp_v2.Controllers
                     EndDate = endDateS,
                     DateRequested = DateTime.Now,
                     RoomId = model.RoomId,
+                    Status = "Confirmed"
                 };
 
                 var roomBooking = _mapper.Map<RoomBooking>(roomBookingModel);
@@ -360,18 +361,17 @@ namespace BookingApp_v2.Controllers
 
         public ActionResult CancelBooking(int id)
         {
-            var roomBookings = _roomBookingRepo.FindAll().ToList();
+            var booking = _roomBookingRepo.FindById(id);
 
-            foreach (var booking in roomBookings)
+            if (booking != null)
             {
-                if (booking.Id == id)
-                {
-                    _roomBookingRepo.Delete(booking);
-                }
+                booking.Status = "Cancelled";
+                _roomBookingRepo.Update(booking);
             }
 
             return RedirectToAction(nameof(MyBooking));
         }
+
 
         // GET: RoomBookingController/Delete/5
         public ActionResult Delete(string id)

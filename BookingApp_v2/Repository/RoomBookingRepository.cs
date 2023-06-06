@@ -57,7 +57,7 @@ namespace BookingApp_v2.Repository
         public IEnumerable<Room> GetAvailableRooms(DateTime startDate, DateTime endDate)
         {
             var bookedRoomIds = _db.RoomBookings
-                .Where(rb => startDate <= rb.EndDate && endDate >= rb.StartDate)
+                .Where(rb => startDate <= rb.EndDate && endDate >= rb.StartDate && rb.Status != "Cancelled")
                 .Select(rb => rb.RoomId)
                 .ToList();
 

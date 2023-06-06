@@ -47,12 +47,22 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.DateRequested)
                 </td>
-                @if (DateTime.Now < Convert.ToDateTime(item.StartDate))
-                {
-                    <td>
-                        <a asp-action="CancelBooking" asp-route-id="@item.Id" onclick="return confirm('Are you sure you want to cancel your booking?')" class="btn btn-outline-danger"> Cancel <i class="fa-solid fa-pen-to-square"></i></a>
-                    </td>
-                }
+
+                <td>
+                    @if (item.Status == "Cancelled")
+                    {
+                        <text>Cancelled</text>
+                    }
+                    else
+                    {
+                        @if (DateTime.Now < Convert.ToDateTime(item.StartDate))
+                        {
+                            <a asp-action="CancelBooking" asp-route-id="@item.Id" onclick="return confirm('Are you sure you want to cancel your booking?')" class="btn btn-outline-danger"> Cancel <i class="fa-solid fa-pen-to-square"></i></a>
+                        }
+                    }
+                </td>
+
+                
                 
             </tr>
         }

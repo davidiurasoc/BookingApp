@@ -32,6 +32,8 @@ namespace BookingApp_v2.Models
         [Display(Name = "Date Requested")]
         public DateTime DateRequested { get; set; }
 
+        public string Status { get; set; }
+
         public List<RoomBookingVM> RoomBookings { get; set; }
 
     }
