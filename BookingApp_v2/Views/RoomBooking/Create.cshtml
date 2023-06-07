@@ -12,11 +12,6 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            @*<div class="form-group">
-                <label asp-for="RoomId" class="control-label"></label>
-                @Html.DropDownListFor(q => q.RoomId, new SelectList(Model.Rooms, "Value", "Text"), "Select Room", new { @class = "form-control"})
-                <span asp-validation-for="RoomId" class="text-danger"></span>
-            </div>*@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -33,6 +28,9 @@
                     </div>
                 </div>
             </div>
+
+            <span id="dateError" class="text-danger"></span>
+
             <div class="form-group">
                 <label asp-for="RoomId" class="control-label"></label>
                 @if (Model.Rooms.Any())
@@ -63,42 +61,73 @@
 
 @section Scripts{
     <script>
+        // Ajax stands for "Asynchronous JavaScript and XML." It allows you to make asynchronous requests to the server from a web page without reloading the entire page.
         $(function () {
             $(".datepicker").datepicker({
                 dateFormat: "yy-mm-dd"
             });
-
 
             $("#StartDate, #EndDate").change(function () {
                 var startDate = $("#StartDate").val();
                 var endDate = $("#EndDate").val();
 
                 if (startDate && endDate) {
-                    $.ajax({
-                        url: '@Url.Action("GetAvailableRooms", "RoomBooking")',
-                        type: 'POST',
-                        data: {
-                            startDate: startDate,
-                            endDate: endDate
-                        },
-                        success: function (data) {
-                            $("#RoomId").empty();
-                            // daca sunt camere disponibile
-                            if (data.length > 0) {
-                                $.each(data, function (index, item) {
-                                    $("#RoomId").append($('<option></option>').val(item.value).text(item.text));
-                                });
-                            // daca nu sunt camere disponibile
-                            } else {
-                                $("#RoomId").append($('<option disabled selected></option>').text('No available rooms'));
+                    if (startDate > endDate) {
+                        $("#dateError").text("Start date cannot be further in the future than the End date...");
+                        return;
+                    } else if (startDate < new Date().toISOString().split('T')[0]) {
+                        $("#dateError").text("Start date cannot be in the past...");
+                        return;
+                    } else {
+                        $("#dateError").text("");
+
+                        $.ajax({
+                            url: '@Url.Action("GetAvailableRooms", "RoomBooking")',
+                            type: 'POST',
+                            data: {
+                                startDate: startDate,
+                                endDate: endDate
+                            },
+                            success: function (data) {
+                                $("#RoomId").empty();
+                                if (data.length > 0) {
+                                    $.each(data, function (index, item) {
+                                        $("#RoomId").append($('<option></option>').val(item.value).text(item.text));
+                                    });
+                                } else {
+                                    $("#RoomId").append($('<option disabled selected></option>').text('No available rooms'));
+                                }
+                            },
+                            error: function () {
+                                alert('An error occurred while retrieving available rooms.');
                             }
-                        },
-                        error: function () {
-                            alert('An error occurred while retrieving available rooms.');
-                        }
-                    });
+                        });
+                    }
+                }
+            });
+
+            $("form").submit(function (e) {
+                var startDate = $("#StartDate").val();
+                var endDate = $("#EndDate").val();
+
+                if (startDate && endDate) {
+                    if (startDate > endDate) {
+                        e.preventDefault();
+                        alert("Start date cannot be later than the End date...");
+                        return;
+                    }
+
+                    var currentDate = new Date().toISOString().split('T')[0];
+                    if (startDate < currentDate) {
+                        e.preventDefault();
+                        alert("Start date cannot be in the past...");
+                        return;
+                    }
                 }
             });
         });
+
+
+
     </script>
 }

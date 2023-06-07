@@ -7,9 +7,11 @@ namespace BookingApp_v2.Models
     public class RoomVM
     {
         public int Id { get; set; }
+
         [Required]
         [Display(Name = "Room")]
         public string RoomName { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public List<RoomBookingVM> RoomBookings { get; set; }

@@ -41,20 +41,6 @@ namespace BookingApp_v2.Repository
             return room;
         }
 
-        //public bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, List<RoomBooking> roomBookings)
-        //{
-        //    TimeRange wantToBeBooked = new TimeRange(startDate, endDate);
-
-        //    bool isOverlapping = roomBookings.Any(rb =>
-        //        wantToBeBooked.OverlapsWith(new TimeRange(rb.StartDate, rb.EndDate)));
-        //    return isOverlapping;
-        //}
-
-        public ICollection<Room> GetEmployeesByRoomType(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public List<RoomBooking> GetRoomBookingsPerRoomR(int roomId)
         {
             var roomBookings = _db.RoomBookings

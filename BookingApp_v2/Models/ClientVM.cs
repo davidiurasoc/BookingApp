@@ -7,22 +7,41 @@ namespace BookingApp_v2.Models
     public class ClientVM
     {
         public string Id { get; set; }
+
+        [Display(Name = "User Name")]
         [Required]
         public string UserName { get; set; }
+
         [Required]
         public string Email { get; set; }
+
+        [Required(ErrorMessage = "Parola este obligatorie.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string PasswordHash { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string NewPassword { get; set; }
+
         public string PhoneNumber { get; set; }
+
         [Display(Name = "First Name")]
         [Required]
         public string FirstName { get; set; }
+
         [Display(Name = "Last Name")]
         [Required]
         public string LastName { get; set; }
+
         public string TaxId { get; set; }
+
         [Display(Name = "Date Of Birth")]
         public DateTime DateOfBirth { get; set; }
+
         [Display(Name = "Date Joined")]
         public DateTime DateJoined { get; set; }
+
         [Required]
         [Display(Name = "Role")]
         public string Role { get; set; }

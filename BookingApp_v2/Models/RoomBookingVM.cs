@@ -45,20 +45,6 @@ namespace BookingApp_v2.Models
         public List<RoomBookingVM> RoomBookings { get; set; }
     }
 
-    public class CreateRoomBookingVM
-    {
-        [Display(Name = "Start Date")]
-        [Required]
-        public string StartDate { get; set; }
-        [Display(Name = "End Date")]
-        [Required]
-        public string EndDate { get; set; }
-        public IEnumerable<SelectListItem> Rooms { get; set; }
-        [Display(Name = "Room Id")]
-        public int RoomId { get; set; }
-
-    }
-
     public class ClientRoomBookingViewVM
     {
         public List<RoomBookingVM> RoomBookings { get; set; }

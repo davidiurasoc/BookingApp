@@ -6,13 +6,13 @@
     ViewData["Title"] = "ListEmployees";
 }
 
-<h1>List of Clients</h1>
+<h1>List of Users</h1>
 
 <p>
     <a asp-action="CreateNewUser" class="btn btn-success"> <i class="fa-solid fa-plus"></i> Create New</a>
 </p>
 
-<table @*id="tblData"*@ class="table">
+<table id="tblData" class="table">
     <thead>
         <tr>
             <th>
@@ -68,8 +68,8 @@
     </tbody>
 </table>
 
-@section Scripts{
+@*@section Scripts{
     <script>
         let table = new DataTable('#tblData');
     </script>
-}
+}*@

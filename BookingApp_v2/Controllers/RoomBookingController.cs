@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingApp_v2.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class RoomBookingController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -109,53 +109,43 @@ namespace BookingApp_v2.Controllers
         [Authorize(Roles = "Administrator, SuperAdministrator")]
         public async Task<IActionResult> EditClientDetails(ClientVM model)
         {
-            if (ModelState.IsValid)
+            var client = await _userManager.FindByIdAsync(model.Id);
+
+            if (client != null)
             {
-                var client = await _userManager.FindByIdAsync(model.Id);
+                client.UserName = model.UserName;
+                client.FirstName = model.FirstName;
+                client.LastName = model.LastName;
+                client.Email = model.Email;
+                client.PhoneNumber = model.PhoneNumber;
+                client.DateOfBirth = model.DateOfBirth;
 
-                if (client != null)
+                if (!string.IsNullOrEmpty(model.NewPassword))
                 {
-                    client.UserName = model.UserName;
-                    client.FirstName = model.FirstName;
-                    client.LastName = model.LastName;
-                    client.Email = model.Email;
-                    client.PhoneNumber = model.PhoneNumber;
-                    client.DateOfBirth = model.DateOfBirth;
+                    var newPassword = _userManager.PasswordHasher.HashPassword(client, model.NewPassword);
+                    client.PasswordHash = newPassword;
+                }
 
-                    var result = await _userManager.UpdateAsync(client);
+                var result = await _userManager.UpdateAsync(client);
 
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction(nameof(ListClients));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Something went wrong");
-                        return View("Error");
-                    }
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(ListUsers));
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Client not found.");
+                    ModelState.AddModelError("", "Something went wrong");
+                    return View("Error");
                 }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Client not found.");
             }
             return View(model);
         }
 
-        //public ActionResult ListClients()
-        //{
-        //    var currentUser = _userManager.GetUserAsync(User).Result;
-        //    //var superAdminRole = "SuperAdministrator";
-
-        //    var users = _userManager.Users
-        //        .Where(u => u.Id != currentUser.Id)
-        //        .ToList();
-
-        //    var model = _mapper.Map<List<ClientVM>>(users);
-        //    return View(model);
-        //}
-
-        public ActionResult ListClients()
+        public ActionResult ListUsers()
         {
             var loggedInUser = _userManager.GetUserAsync(User).GetAwaiter().GetResult();
             var superAdminRole = "SuperAdministrator";
@@ -175,8 +165,6 @@ namespace BookingApp_v2.Controllers
             var model = _mapper.Map<List<ClientVM>>(wantedUsers);
             return View(model);
         }
-
-
 
         public ActionResult DeleteClient(string id)
         {
@@ -198,7 +186,7 @@ namespace BookingApp_v2.Controllers
                 if (result.Succeeded)
                 {
                     var clients = _userManager.GetUsersInRoleAsync("Client").Result;
-                    return RedirectToAction("ListClients");
+                    return RedirectToAction("ListUsers");
                 }
                 else
                 {
@@ -211,16 +199,6 @@ namespace BookingApp_v2.Controllers
             }
             
         }
-
-        //public bool IsIntervalOverlapping(DateTime startDate, DateTime endDate, List<RoomBooking> roomBookings)
-        //{
-        //    TimeRange wantToBeBooked = new TimeRange(startDate, endDate);
-
-        //    bool isOverlapping = roomBookings.Any(rb =>
-        //        wantToBeBooked.OverlapsWith(new TimeRange(rb.StartDate, rb.EndDate)));
-        //    return isOverlapping;
-        //}
-
 
         [HttpPost]
         public ActionResult GetAvailableRooms(DateTime startDate, DateTime endDate)
@@ -235,7 +213,6 @@ namespace BookingApp_v2.Controllers
 
             return Json(roomItems);
         }
-
 
         // GET: RoomBookingController/Create
         public ActionResult Create()
@@ -266,13 +243,13 @@ namespace BookingApp_v2.Controllers
                 var startDate = Convert.ToDateTime(model.StartDate);
                 var endDate = Convert.ToDateTime(model.EndDate);
 
-                if (DateTime.Compare(startDate, endDate) > 1)
+                if (DateTime.Compare(startDate, endDate) > 0)
                 {
                     ModelState.AddModelError("", "Start date cannot be further in the future than the End date...");
                     return View(model);
                 }
 
-                if (DateTime.Compare(DateTime.Now, startDate) > 0)
+                if (DateTime.Compare(DateTime.Now.Date, startDate.Date) > 0)
                 {
                     ModelState.AddModelError("", "Start date cannot be in the past...");
                     return View(model);
@@ -293,13 +270,9 @@ namespace BookingApp_v2.Controllers
                     return View(model);
                 }
 
-                //    //if (IsIntervalOverlapping(startDate, endDate, roomBookings))
-                //    //{
-                //    //    ModelState.AddModelError("", "The room is already booked somewhere in this interval!");
-                //    //    return View(model);
-                //    //}
 
                 var client = _userManager.GetUserAsync(User).Result;
+
                 int daysBooked = (int)(endDate - startDate).TotalDays;
 
                 var startDateS = startDate.ToString();
@@ -318,17 +291,16 @@ namespace BookingApp_v2.Controllers
                 var roomBooking = _mapper.Map<RoomBooking>(roomBookingModel);
                 var isSuccess = _roomBookingRepo.Create(roomBooking);
 
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
+                //if (!ModelState.IsValid)
+                //{
+                //    return View(model);
+                //}
 
                 if (!isSuccess)
                 {
                     ModelState.AddModelError("", "Something Went Wrong with submitting your record...");
                     return View(model);
                 }
-
                 return RedirectToAction("MyBooking");
             }
             catch
@@ -361,6 +333,7 @@ namespace BookingApp_v2.Controllers
 
         public ActionResult CancelBooking(int id)
         {
+            var client = _userManager.GetUserAsync(User).Result;
             var booking = _roomBookingRepo.FindById(id);
 
             if (booking != null)
@@ -369,9 +342,20 @@ namespace BookingApp_v2.Controllers
                 _roomBookingRepo.Update(booking);
             }
 
-            return RedirectToAction(nameof(MyBooking));
-        }
+            var isSuperAdmin = _userManager.IsInRoleAsync(client, "SuperAdministrator").Result;
+            var isAdmin = _userManager.IsInRoleAsync(client, "Administrator").Result;
+            var isSupervisor = _userManager.IsInRoleAsync(client, "Supervisor").Result;
+            var isClient = _userManager.IsInRoleAsync(client, "Client").Result;
 
+            if (isClient)
+            {
+                return RedirectToAction("MyBooking");
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
 
         // GET: RoomBookingController/Delete/5
         public ActionResult Delete(string id)
@@ -400,7 +384,7 @@ namespace BookingApp_v2.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateNewUser(ClientVM model) // 
+        public ActionResult CreateNewUser(ClientVM model) 
         {
             if (User.IsInRole("Administrator") || User.IsInRole("SuperAdministrator"))
             {
@@ -410,23 +394,24 @@ namespace BookingApp_v2.Controllers
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
+                    DateOfBirth = model.DateOfBirth,
                     DateJoined = model.DateJoined,
                 };
 
-                var result = _userManager.CreateAsync(newUser, "P@ssword1").Result;
+                var result = _userManager.CreateAsync(newUser, model.PasswordHash).Result;
                 if (result.Succeeded)
                 {
                     var roleResult = _userManager.AddToRoleAsync(newUser, model.Role).Result;
                     if (roleResult.Succeeded)
                     {
-                        return RedirectToAction("ListClients");
+                        return RedirectToAction("ListUsers");
                     }
                     else
                     {
                         ModelState.AddModelError("", "A apărut o eroare la adăugarea rolului utilizatorului.");
                     }
 
-                    return RedirectToAction("ListClients");
+                    return RedirectToAction("ListUsers");
                 }
                 else
                 {

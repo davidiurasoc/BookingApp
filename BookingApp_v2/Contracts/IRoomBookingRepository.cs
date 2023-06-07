@@ -9,7 +9,6 @@ namespace BookingApp_v2.Contracts
     public interface IRoomBookingRepository : IRepositoryBase<RoomBooking>
     {
         ICollection<RoomBooking> GetRoomBookingsPerClient(string employeeId);
-        List<RoomBooking> GetRoomBookingsPerRoom(int roomId);
         public IEnumerable<Room> GetAvailableRooms(DateTime startDate, DateTime endDate);
     }
 }

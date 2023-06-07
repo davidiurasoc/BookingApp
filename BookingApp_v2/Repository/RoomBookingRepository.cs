@@ -68,14 +68,6 @@ namespace BookingApp_v2.Repository
             return availableRooms;
         }
 
-        public List<RoomBooking> GetRoomBookingsPerRoom(int roomId)
-        {
-            var roomBookings = FindAll()
-                .Where(q => q.RoomId == roomId)
-                .ToList();
-            return roomBookings;
-        }
-
         public bool IsExists(int id)
         {
             var exists = _db.RoomBookings.Any(q => q.Id == id);
