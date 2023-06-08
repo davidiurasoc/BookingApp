@@ -36,6 +36,9 @@ namespace BookingApp_v2.Models
 
         public List<RoomBookingVM> RoomBookings { get; set; }
 
+        [Display(Name = "Total Number Of Bookings")]
+        public int TotalBookings { get; set; }
+
     }
 
     public class AdminRoomBookingsViewVM

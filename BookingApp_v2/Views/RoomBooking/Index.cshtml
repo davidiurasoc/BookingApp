@@ -1,4 +1,4 @@
-﻿@model AdminRoomBookingsViewVM
+﻿@model RoomBookingVM
 
 @{
     ViewData["Title"] = "Index";
@@ -8,8 +8,32 @@
     <div class="col-md-3">
         <div class="card" style="width: 18rem;">
             <div class="card-body text-center">
-                <h1 class="card-title"> @Model.TotalBookings</h1>
+                <h1 class="card-title" style="color: black"> @Model.TotalBookings</h1>
                 <h5 class="card-text">@Html.DisplayNameFor(model => model.TotalBookings)</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body text-center" style="color: green">
+                <h1 class="card-title">@Model.RoomBookings.Where(model => model.Status == "Approved").Count()</h1>
+                <h5 class="card-text">Approved Bookings</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body text-center" style="color: darkred">
+                <h1 class="card-title">@Model.RoomBookings.Where(model => model.Status == "Cancelled").Count()</h1>
+                <h5 class="card-text">Cancelled Bookings</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body text-center" style="color: dodgerblue">
+                <h1 class="card-title">@Model.RoomBookings.Where(model => model.Status == "Pending").Count()</h1>
+                <h5 class="card-text">Pending Bookings</h5>
             </div>
         </div>
     </div>
@@ -43,6 +67,10 @@
             <th>
                 Status
             </th>
+            <th>
+
+            </th>
+
         </tr>
     </thead>
     <tbody>
@@ -63,19 +91,38 @@
             <td>
                 @Html.DisplayFor(modelItem => item.DateRequested)
             </td>
-                <td>
-                    @if (item.Status == "Cancelled")
-                    {
-                        <text>Cancelled</text>
-                    }
-                    else
-                    {
-                        @if (DateTime.Now < Convert.ToDateTime(item.StartDate))
-                        {
-                            <a asp-action="CancelUserBooking" asp-route-id="@item.Id" onclick="return confirm('Are you sure you want to cancel your booking?')" class="btn btn-outline-danger"> Cancel <i class="fa-solid fa-pen-to-square"></i></a>
-                        }
-                    }
-                </td>
+
+            <td>
+                @if (item.Status == "Pending")
+                {
+                    <p style="color: dodgerblue"><b>Pending</b></p>
+                }
+                else if (item.Status == "Cancelled")
+                {
+                    <p style="color: darkred"><b>Cancelled</b></p>
+                    @*<text>Cancelled</text>*@
+                }
+                else
+                {
+                    <p style="color: green"><b>Approved</b></p>
+                }
+            </td>
+            <td>
+                @if (DateTime.Now < Convert.ToDateTime(item.StartDate) && item.Status == "Pending")
+                {
+                    <div>
+                            <a asp-action="CancelUserBooking" asp-route-id="@item.Id" asp-route-viewName="Index" onclick="return confirm('Are you sure you want to cancel this booking?')" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
+                            <a asp-action="ApproveUserBooking" asp-route-id="@item.Id" asp-route-viewName="Index" onclick="return confirm('Are you sure you want to approve this booking?')" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></a>
+                    </div>
+                }
+                else if ((DateTime.Now < Convert.ToDateTime(item.StartDate)) && item.Status == "Approved")
+                {
+                    <div>
+                            <a asp-action="CancelUserBooking" asp-route-id="@item.Id" asp-route-viewName="Index" onclick="return confirm('Are you sure you want to cancel this booking?')" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
+                    </div>
+                }
+            </td>
+
         </tr>
 }
     </tbody>

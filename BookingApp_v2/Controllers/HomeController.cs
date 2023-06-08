@@ -24,7 +24,7 @@ namespace BookingApp_v2.Controllers
 
         public IActionResult Index()
         {
-            _notyf.Success("You Loged in Succesfully");
+            _notyf.Success("Welcome");
             return View();
         }
 

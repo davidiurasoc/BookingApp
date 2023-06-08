@@ -51,7 +51,7 @@ namespace BookingApp_v2.Controllers
         { 
             var roomBookings = _roomBookingRepo.FindAll();
             var roomBookingsModel = _mapper.Map<List<RoomBookingVM>>( roomBookings );
-            var model = new AdminRoomBookingsViewVM
+            var model = new RoomBookingVM
             {
                 TotalBookings = roomBookingsModel.Count,
                 RoomBookings = roomBookingsModel
@@ -298,7 +298,7 @@ namespace BookingApp_v2.Controllers
                     EndDate = endDateS,
                     DateRequested = DateTime.Now,
                     RoomId = model.RoomId,
-                    Status = "Confirmed"
+                    Status = "Pending"
                 };
 
                 var roomBooking = _mapper.Map<RoomBooking>(roomBookingModel);
@@ -354,7 +354,28 @@ namespace BookingApp_v2.Controllers
             return RedirectToAction("MyBooking");
         }
 
-        public ActionResult CancelUserBooking(int id)
+        public ActionResult ApproveUserBooking(int id, string viewName, string userId)
+        {
+            var client = _userManager.GetUserAsync(User).Result;
+            var booking = _roomBookingRepo.FindById(id);
+
+            if (booking != null)
+            {
+                booking.Status = "Approved";
+                _roomBookingRepo.Update(booking);
+            }
+
+            if (viewName == "BookingsPerClient")
+            {
+                return RedirectToAction("BookingsPerClient", new { id = userId });
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
+        public ActionResult CancelUserBooking(int id, string viewName, string userId)
         {
             var client = _userManager.GetUserAsync(User).Result;
             var booking = _roomBookingRepo.FindById(id);
@@ -364,7 +385,15 @@ namespace BookingApp_v2.Controllers
                 booking.Status = "Cancelled";
                 _roomBookingRepo.Update(booking);
             }
-            return RedirectToAction("Index");
+
+            if (viewName == "BookingsPerClient")
+            {
+                return RedirectToAction("BookingsPerClient", new { id = userId });
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
         }
 
         // GET: RoomBookingController/Delete/5
