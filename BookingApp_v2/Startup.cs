@@ -1,3 +1,5 @@
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
 using AutoMapper;
 using BookingApp_v2.Contracts;
 using BookingApp_v2.Data;
@@ -47,6 +49,8 @@ namespace BookingApp_v2
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddNotyf(config => { config.DurationInSeconds = 10; config.IsDismissable = true; config.Position = NotyfPosition.BottomRight; });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +90,8 @@ namespace BookingApp_v2
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            app.UseNotyf();
         }
     }
 }

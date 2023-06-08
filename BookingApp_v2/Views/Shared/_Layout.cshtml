@@ -84,6 +84,7 @@
     <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    @await Component.InvokeAsync("Notyf")
 
     @RenderSection("Scripts", required: false)
 </body>

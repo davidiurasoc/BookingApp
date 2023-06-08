@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification;
 
 namespace BookingApp_v2
 {
@@ -22,5 +23,7 @@ namespace BookingApp_v2
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+       
     }
 }

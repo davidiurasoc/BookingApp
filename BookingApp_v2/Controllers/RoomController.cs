@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace BookingApp_v2.Controllers
 {
@@ -19,18 +21,21 @@ namespace BookingApp_v2.Controllers
         private readonly IRoomBookingRepository _roomBookingRepo;
         private readonly IMapper _mapper;
         private readonly UserManager<Client> _userManager;
+        private readonly INotyfService _notyf;
 
         public RoomController(
             IRoomRepository roomRepo,
             IRoomBookingRepository roomBookingRepo,
             IMapper mapper, 
-            UserManager<Client> userManager
+            UserManager<Client> userManager,
+            INotyfService notyf
             )
         {
             _roomRepo = roomRepo;
             _roomBookingRepo = roomBookingRepo;
             _mapper = mapper;
             _userManager = userManager;
+            _notyf = notyf;
             
         }
 
@@ -61,17 +66,13 @@ namespace BookingApp_v2.Controllers
             var roomBookings = _roomRepo.GetRoomBookingsPerRoomR(id);
 
             var roomBookingModel = _mapper.Map<List<RoomBookingVM>>(roomBookings);
-
-            //var model = new ClientRoomBookingViewVM
-            //{
-            //    RoomBookings = roomBookingModel
-            //};
             return View(roomBookingModel);
         }
 
         // GET: RoomController/Create
         public ActionResult Create()
         {
+            _notyf.Information("Here you can create a new room", 7);
             return View();
         }
 
@@ -94,7 +95,7 @@ namespace BookingApp_v2.Controllers
                     ModelState.AddModelError("", "Something Went Wrong...");
                     return View(model);
                 }
-
+                _notyf.Custom("Room Succesfully Created", 5, "green", "fa fa-plus");
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -114,6 +115,7 @@ namespace BookingApp_v2.Controllers
             var room = _roomRepo.FindById(id);
             var model = _mapper.Map<RoomVM>(room);
 
+            _notyf.Information("Here you can edit a room", 7);
             return View(model);
         }
 
@@ -136,6 +138,7 @@ namespace BookingApp_v2.Controllers
                     return View(model);
                 }
 
+                _notyf.Custom("Room Details Succesfully Modified", 5, "green", "fa fa-gear");
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -158,7 +161,7 @@ namespace BookingApp_v2.Controllers
             {
                 return BadRequest();
             }
-
+            _notyf.Success("Room Succesfully Deleted", 5);
             return RedirectToAction(nameof(Index));
         }
 

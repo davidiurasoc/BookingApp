@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Itenso.TimePeriod;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace BookingApp_v2.Controllers
 {
@@ -25,13 +26,15 @@ namespace BookingApp_v2.Controllers
         private readonly IRoomRepository _roomRepo;
         private readonly IMapper _mapper;
         private readonly UserManager<Client> _userManager;
+        private readonly INotyfService _notyf;
 
         public RoomBookingController(
             IRoomBookingRepository roomBookingRepo,
             IRoomRepository roomRepo,
             IMapper mapper,
             UserManager<Client> userManager,
-            ApplicationDbContext db
+            ApplicationDbContext db,
+            INotyfService notyf
         )
         {
             _roomBookingRepo = roomBookingRepo;
@@ -39,6 +42,7 @@ namespace BookingApp_v2.Controllers
             _mapper = mapper;
             _userManager = userManager;
             _db = db;
+            _notyf = notyf;
         }
 
         [Authorize(Roles = "Administrator, SuperAdministrator")]
@@ -52,6 +56,9 @@ namespace BookingApp_v2.Controllers
                 TotalBookings = roomBookingsModel.Count,
                 RoomBookings = roomBookingsModel
             };
+
+            _notyf.Information("Here you can find all the bookings", 7);
+            _notyf.Warning("Be aware when changing the status!!!", 8);
             return View(model);
         }
 
@@ -68,6 +75,8 @@ namespace BookingApp_v2.Controllers
             {
                 RoomBookings = clientBookingModel
             };
+
+            _notyf.Information("Here you can see all your bookings", 7);
             return View(model);
         }
 
@@ -101,6 +110,8 @@ namespace BookingApp_v2.Controllers
         {
             var client = _userManager.FindByIdAsync(id).Result;
             var model = _mapper.Map<ClientVM>(client);
+
+            _notyf.Information("Here you can edit user Details", 7);
             return View(model);
         }
 
@@ -130,6 +141,7 @@ namespace BookingApp_v2.Controllers
 
                 if (result.Succeeded)
                 {
+                    _notyf.Success("User Details Succesfully Modified", 7);
                     return RedirectToAction(nameof(ListUsers));
                 }
                 else
@@ -186,6 +198,7 @@ namespace BookingApp_v2.Controllers
                 if (result.Succeeded)
                 {
                     var clients = _userManager.GetUsersInRoleAsync("Client").Result;
+                    _notyf.Success("User Succesfully Deleted", 5);
                     return RedirectToAction("ListUsers");
                 }
                 else
@@ -291,16 +304,13 @@ namespace BookingApp_v2.Controllers
                 var roomBooking = _mapper.Map<RoomBooking>(roomBookingModel);
                 var isSuccess = _roomBookingRepo.Create(roomBooking);
 
-                //if (!ModelState.IsValid)
-                //{
-                //    return View(model);
-                //}
-
                 if (!isSuccess)
                 {
                     ModelState.AddModelError("", "Something Went Wrong with submitting your record...");
                     return View(model);
                 }
+
+                _notyf.Success("You Booking Was Succesfull", 7);
                 return RedirectToAction("MyBooking");
             }
             catch
@@ -341,20 +351,20 @@ namespace BookingApp_v2.Controllers
                 booking.Status = "Cancelled";
                 _roomBookingRepo.Update(booking);
             }
+            return RedirectToAction("MyBooking");
+        }
 
-            var isSuperAdmin = _userManager.IsInRoleAsync(client, "SuperAdministrator").Result;
-            var isAdmin = _userManager.IsInRoleAsync(client, "Administrator").Result;
-            var isSupervisor = _userManager.IsInRoleAsync(client, "Supervisor").Result;
-            var isClient = _userManager.IsInRoleAsync(client, "Client").Result;
+        public ActionResult CancelUserBooking(int id)
+        {
+            var client = _userManager.GetUserAsync(User).Result;
+            var booking = _roomBookingRepo.FindById(id);
 
-            if (isClient)
+            if (booking != null)
             {
-                return RedirectToAction("MyBooking");
+                booking.Status = "Cancelled";
+                _roomBookingRepo.Update(booking);
             }
-            else
-            {
-                return RedirectToAction("Index");
-            }
+            return RedirectToAction("Index");
         }
 
         // GET: RoomBookingController/Delete/5
@@ -380,6 +390,7 @@ namespace BookingApp_v2.Controllers
 
         public ActionResult CreateNewUser()
         {
+            _notyf.Information("Here you can create a new User", 7);
             return View();
         }
 
@@ -404,6 +415,7 @@ namespace BookingApp_v2.Controllers
                     var roleResult = _userManager.AddToRoleAsync(newUser, model.Role).Result;
                     if (roleResult.Succeeded)
                     {
+                        _notyf.Success("User was created Succesfully", 7);
                         return RedirectToAction("ListUsers");
                     }
                     else
