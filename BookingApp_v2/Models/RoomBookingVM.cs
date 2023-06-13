@@ -19,7 +19,7 @@ namespace BookingApp_v2.Models
         [Required]
         public string StartDate { get; set; }
         
-        [Display(Name = "Start Date")]
+        [Display(Name = "End Date")]
         [Required]
         public string EndDate { get; set; }
         

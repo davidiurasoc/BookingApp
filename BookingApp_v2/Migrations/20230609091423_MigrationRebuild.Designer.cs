@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace BookingApp_v2.Data.Migrations
+namespace BookingApp_v2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230606085245_AddedStatusToBookings")]
-    partial class AddedStatusToBookings
+    [Migration("20230609091423_MigrationRebuild")]
+    partial class MigrationRebuild
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

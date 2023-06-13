@@ -369,10 +369,7 @@ namespace BookingApp_v2.Controllers
             {
                 return RedirectToAction("BookingsPerClient", new { id = userId });
             }
-            else
-            {
-                return RedirectToAction("Index");
-            }
+            return RedirectToAction("Index");
         }
 
         public ActionResult CancelUserBooking(int id, string viewName, string userId)
